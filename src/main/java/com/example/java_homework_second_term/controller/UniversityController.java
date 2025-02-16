@@ -1,5 +1,6 @@
 package com.example.java_homework_second_term.controller;
 
+import com.example.java_homework_second_term.api.UniversityApi;
 import com.example.java_homework_second_term.model.University;
 import com.example.java_homework_second_term.service.UniversityService;
 import jakarta.validation.Valid;
@@ -15,20 +16,37 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/universities")
 @RequiredArgsConstructor
-public class UniversityController {
+public class UniversityController implements UniversityApi {
     private final UniversityService universityService;
 
-    @GetMapping
+    @Override
     public ResponseEntity<Collection<University>> getAllUniversities() {
-        final Collection<University> result = universityService.getAllUniversities();
-        return ResponseEntity.ok(result);
+        Collection<University> universities = universityService.getAllUniversities();
+        return ResponseEntity.ok(universities);
     }
 
-    @PostMapping
+    @Override
+    public ResponseEntity<University> getUniversityById(@PathVariable Long id) {
+        University university = universityService.getUniversityById(id);
+        return ResponseEntity.ok(university);
+    }
+
+    @Override
     public ResponseEntity<University> createUniversity(@Valid @RequestBody University university) {
-        final University result = universityService.createUniversity(university);
-        log.info("created %s".formatted(result.toString()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        University createdUniversity = universityService.createUniversity(university);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUniversity);
+    }
+
+    @Override
+    public ResponseEntity<University> updateUniversity(@PathVariable Long id, @Valid @RequestBody University university) {
+        University updatedUniversity = universityService.updateUniversity(id, university);
+        return ResponseEntity.ok(updatedUniversity);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteUniversity(@PathVariable Long id) {
+        universityService.deleteUniversity(id);
+        return ResponseEntity.noContent().build();
     }
 }
 
