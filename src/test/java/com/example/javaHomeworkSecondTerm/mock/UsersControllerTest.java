@@ -28,12 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(UsersController.class)
-@ContextConfiguration(classes = {SecurityConfig.class})
-@ActiveProfiles("test")
+@ContextConfiguration(classes = {SecurityConfig.class, Application.class})
+//@ActiveProfiles("test")
 public class UsersControllerTest {
-
-    @MockitoBean
-    private JwtLoggingFilter jwtLoggingFilter;
 
     @Autowired
     private MockMvc mockMvc;
