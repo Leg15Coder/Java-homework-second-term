@@ -2,7 +2,7 @@ spring:
   application:
     name: Java homework second term
   datasource:
-    url: jdbc:h2:mem:testdыДb
+    url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -11,6 +11,24 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  security:
+    user:
+      name: admin
+      password: someText
 
 server:
   port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: shutdown
+  server:
+    base-path: /admin/actuator

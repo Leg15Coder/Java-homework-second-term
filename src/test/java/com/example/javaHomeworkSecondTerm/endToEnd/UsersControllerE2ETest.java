@@ -1,5 +1,6 @@
-package com.example.java_homework_second_term.endToEnd;
+package com.example.javaHomeworkSecondTerm.endToEnd;
 
+import com.example.javaHomeworkSecondTerm.Application;
 import com.example.javaHomeworkSecondTerm.model.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,13 +11,16 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import com.example.javaHomeworkSecondTerm.security.SecurityConfig;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(classes = {Application.class, SecurityConfig.class})
 @ActiveProfiles("test")
 public class UsersControllerE2ETest {
 

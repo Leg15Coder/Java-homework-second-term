@@ -1,5 +1,6 @@
-package com.example.java_homework_second_term.mock;
+package com.example.javaHomeworkSecondTerm.mock;
 
+import com.example.javaHomeworkSecondTerm.Application;
 import com.example.javaHomeworkSecondTerm.controller.UsersController;
 import com.example.javaHomeworkSecondTerm.model.User;
 import com.example.javaHomeworkSecondTerm.service.UserService;
@@ -7,10 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import com.example.javaHomeworkSecondTerm.security.JwtLoggingFilter;
+import com.example.javaHomeworkSecondTerm.security.SecurityConfig;
 
 import java.util.List;
 
@@ -23,12 +28,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(UsersController.class)
+@ContextConfiguration(classes = {SecurityConfig.class})
+@ActiveProfiles("test")
 public class UsersControllerTest {
+
+    @MockitoBean
+    private JwtLoggingFilter jwtLoggingFilter;
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     @Test

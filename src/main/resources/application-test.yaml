@@ -8,5 +8,9 @@ spring:
     password:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+  security:
+    user:
+      name: test
+      password: someText
 server:
   port: 8082
