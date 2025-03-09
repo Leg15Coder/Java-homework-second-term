@@ -16,8 +16,9 @@ spring:
       name: admin
       password: someText
 
-server:
-  port: 8080
+local:
+  server:
+    port: 8080
 
 springdoc:
   swagger-ui:
@@ -32,3 +33,26 @@ management:
         exclude: shutdown
   server:
     base-path: /admin/actuator
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      default:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        slidingWindowSize: 100
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: 10000ms
+        permittedNumberOfCallsInHalfOpenState: 5
+        eventConsumerBufferSize: 10
+        ringBufferSizeInClosedState: 100
+        ringBufferSizeInHalfOpenState: 10
+
+  ratelimiter:
+    instances:
+      default:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 500ms
+

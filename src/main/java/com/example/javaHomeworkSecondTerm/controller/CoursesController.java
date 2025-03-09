@@ -2,6 +2,7 @@ package com.example.javaHomeworkSecondTerm.controller;
 
 import com.example.javaHomeworkSecondTerm.model.Course;
 import com.example.javaHomeworkSecondTerm.service.CourseService;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,19 +21,24 @@ import java.util.Collection;
 @RequestMapping("/courses")
 @RequiredArgsConstructor
 public class CoursesController {
+    private final CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("coursesCircuitBreakerController");
     private final CourseService courseService;
 
     @GetMapping
     public ResponseEntity<Collection<Course>> getAllCourses() {
-        final Collection<Course> result = courseService.getAllCourses();
-        return ResponseEntity.ok(result);
+        return circuitBreaker.executeSupplier(() -> {
+            final Collection<Course> result = courseService.getAllCourses();
+            return ResponseEntity.ok(result);
+        });
     }
 
     @PostMapping
     public ResponseEntity<Course> createCourse(@Valid @RequestBody Course course) {
-        final Course result = courseService.createCourse(course);
-        log.info("created %s".formatted(result.toString()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return circuitBreaker.executeSupplier(() -> {
+            final Course result = courseService.createCourse(course);
+            log.info("created %s".formatted(result.toString()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        });
     }
 }
 

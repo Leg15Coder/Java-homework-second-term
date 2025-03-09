@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 
 import jakarta.validation.Valid;
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 public interface UniversityApi {
 
@@ -30,7 +31,7 @@ public interface UniversityApi {
             @ApiResponse(responseCode = "200", description = "Университет успешно получен"),
             @ApiResponse(responseCode = "404", description = "Университет не найден")
     })
-    ResponseEntity<University> getUniversityById(@PathVariable Long id);
+    ResponseEntity<CompletableFuture<University>> getUniversityById(@PathVariable Long id);
 
     @PostMapping
     @Operation(summary = "Создать новый университет")

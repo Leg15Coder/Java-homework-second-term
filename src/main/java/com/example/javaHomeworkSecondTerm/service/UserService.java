@@ -1,14 +1,17 @@
 package com.example.javaHomeworkSecondTerm.service;
 
+import com.example.javaHomeworkSecondTerm.exception.UserDeleteException;
 import com.example.javaHomeworkSecondTerm.exception.UserNotFoundException;
 import com.example.javaHomeworkSecondTerm.repository.UsersRepository;
 import com.example.javaHomeworkSecondTerm.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -20,9 +23,10 @@ public class UserService {
         return usersRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return usersRepository.findById(id);
-    }
+  @Cacheable(value = "userCache", key = "#id")
+  public User getUserById(Long id) {
+    return usersRepository.findById(id).orElse(null);
+  }
 
     public User createUser(User user) {
         return usersRepository.save(user);
@@ -50,8 +54,18 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
+    /**
+     * Метод для удаления пользователя с добавлением механизма повторных попыток.
+     * В случае возникновения исключения UserDeleteException удаление будет пытаться повториться
+     * до 5 раз с интервалом в 10 секунд. Это гарантия того, что при временных сбоях (например,
+     * проблемы с соединением или с базой данных) операция удаления будет повторена.
+     *
+     * @param id ID пользователя, которого нужно удалить.
+     */
+    @Retryable(value = UserDeleteException.class, maxAttempts = 5, backoff = @Backoff(delay = 10000))
     public void deleteUser(Long id) {
-        usersRepository.deleteById(id);
+      User user = usersRepository.findById(id).orElseThrow(() -> new UserDeleteException("%d".formatted(id)));
+      usersRepository.delete(user);
     }
 }
 
