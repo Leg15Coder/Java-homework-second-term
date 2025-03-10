@@ -1,13 +1,7 @@
 package com.example.javaHomeworkSecondTerm.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -30,8 +24,9 @@ public class Course {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author")
+    private User author;
 }
 

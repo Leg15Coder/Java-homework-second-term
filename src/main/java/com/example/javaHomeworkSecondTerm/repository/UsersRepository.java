@@ -3,4 +3,6 @@ package com.example.javaHomeworkSecondTerm.repository;
 import com.example.javaHomeworkSecondTerm.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UsersRepository extends JpaRepository<User, Long> { }
+import java.util.UUID;
+
+public interface UsersRepository extends JpaRepository<User, UUID> { }

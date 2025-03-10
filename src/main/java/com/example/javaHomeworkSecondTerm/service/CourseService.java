@@ -2,6 +2,7 @@ package com.example.javaHomeworkSecondTerm.service;
 
 import com.example.javaHomeworkSecondTerm.repository.CoursesRepository;
 import com.example.javaHomeworkSecondTerm.model.Course;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.util.Collections;
 
 @Slf4j
 @Service
+@Transactional
 // @RequiredArgsConstructor
 public class CourseService {
     private final CoursesRepository coursesRepository;

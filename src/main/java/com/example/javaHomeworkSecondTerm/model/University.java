@@ -29,9 +29,4 @@ public class University {
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 }
-

@@ -1,6 +1,7 @@
 package com.example.javaHomeworkSecondTerm.endToEnd;
 
 import com.example.javaHomeworkSecondTerm.Application;
+import com.example.javaHomeworkSecondTerm.config.TestContainerConfig;
 import com.example.javaHomeworkSecondTerm.model.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {Application.class, SecurityConfig.class})
 @ActiveProfiles("test")
-public class UsersControllerE2ETest {
+public class UsersControllerE2ETest extends TestContainerConfig {
 
     @LocalServerPort
     private int port;

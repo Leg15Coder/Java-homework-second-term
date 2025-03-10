@@ -1,32 +1,29 @@
 package com.example.javaHomeworkSecondTerm.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 
+import java.util.List;
+import java.util.UUID;
+
 @Entity
-@Builder
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
 
     @NotNull(message = "Email не может быть пустым")
     @Email(message = "Неверный формат email")
@@ -41,4 +38,14 @@ public class User {
     @Size(min = 1, message = "Фамилия должна содержать хотя бы 1 символ")
     @Column(name = "surname")
     private String surname;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Course> courses;
+
+    public User(String email, String name, String surname) {
+        this.email = email;
+        this.name = name;
+        this.surname = surname;
+    }
 }

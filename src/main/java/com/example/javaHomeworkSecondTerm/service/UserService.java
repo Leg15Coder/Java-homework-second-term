@@ -4,6 +4,7 @@ import com.example.javaHomeworkSecondTerm.exception.UserDeleteException;
 import com.example.javaHomeworkSecondTerm.exception.UserNotFoundException;
 import com.example.javaHomeworkSecondTerm.repository.UsersRepository;
 import com.example.javaHomeworkSecondTerm.model.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -12,9 +13,11 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
     private final UsersRepository usersRepository;
@@ -24,7 +27,7 @@ public class UserService {
     }
 
   @Cacheable(value = "userCache", key = "#id")
-  public User getUserById(Long id) {
+  public User getUserById(UUID id) {
     return usersRepository.findById(id).orElse(null);
   }
 
@@ -32,7 +35,7 @@ public class UserService {
         return usersRepository.save(user);
     }
 
-    public User updateUser(Long id, User updatedUser) {
+    public User updateUser(UUID id, User updatedUser) {
         return usersRepository.findById(id)
                 .map(existingUser -> {
                     existingUser.setEmail(updatedUser.getEmail());
@@ -43,7 +46,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    public User patchUser(Long id, User partialUser) {
+    public User patchUser(UUID id, User partialUser) {
         return usersRepository.findById(id)
                 .map(existingUser -> {
                     if (partialUser.getEmail() != null) existingUser.setEmail(partialUser.getEmail());
@@ -63,7 +66,7 @@ public class UserService {
      * @param id ID пользователя, которого нужно удалить.
      */
     @Retryable(value = UserDeleteException.class, maxAttempts = 5, backoff = @Backoff(delay = 10000))
-    public void deleteUser(Long id) {
+    public void deleteUser(UUID id) {
       User user = usersRepository.findById(id).orElseThrow(() -> new UserDeleteException("%d".formatted(id)));
       usersRepository.delete(user);
     }

@@ -1,5 +1,6 @@
 package com.example.javaHomeworkSecondTerm.aspect;
 
+import com.example.javaHomeworkSecondTerm.config.TestContainerConfig;
 import com.example.javaHomeworkSecondTerm.controller.UsersController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-class LoggingAspectTest {
+class LoggingAspectTest extends TestContainerConfig {
 
   @Autowired
   private LoggingAspect loggingAspect;

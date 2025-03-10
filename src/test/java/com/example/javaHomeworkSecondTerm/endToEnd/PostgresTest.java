@@ -1,5 +1,6 @@
 package com.example.javaHomeworkSecondTerm.endToEnd;
 
+import com.example.javaHomeworkSecondTerm.config.TestContainerConfig;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class PostgresTest {
+public class PostgresTest extends TestContainerConfig {
   @LocalServerPort
   private int port;
 

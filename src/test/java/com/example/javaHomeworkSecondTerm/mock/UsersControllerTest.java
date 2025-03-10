@@ -1,6 +1,7 @@
 package com.example.javaHomeworkSecondTerm.mock;
 
 import com.example.javaHomeworkSecondTerm.Application;
+import com.example.javaHomeworkSecondTerm.config.TestContainerConfig;
 import com.example.javaHomeworkSecondTerm.controller.UsersController;
 import com.example.javaHomeworkSecondTerm.model.User;
 import com.example.javaHomeworkSecondTerm.service.UserService;
@@ -9,15 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import com.example.javaHomeworkSecondTerm.security.JwtLoggingFilter;
 import com.example.javaHomeworkSecondTerm.security.SecurityConfig;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UsersController.class)
 @ContextConfiguration(classes = {SecurityConfig.class, Application.class})
 //@ActiveProfiles("test")
-public class UsersControllerTest {
+public class UsersControllerTest extends TestContainerConfig {
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,7 +40,7 @@ public class UsersControllerTest {
 
     @Test
     public void testGetAllUsers() throws Exception {
-        List<User> users = List.of(new User(1L, "test@email.com", "John", "Doe"));
+        List<User> users = List.of(new User("test@email.com", "John", "Doe"));
         when(userService.getAllUsers()).thenReturn(users);
 
         mockMvc.perform(get("/users"))
@@ -50,7 +50,7 @@ public class UsersControllerTest {
 
     @Test
     public void testCreateUser() throws Exception {
-        User user = new User(1L, "test@email.com", "John", "Doe");
+        User user = new User("test@email.com", "John", "Doe");
         when(userService.createUser(any())).thenReturn(user);
 
         mockMvc.perform(post("/users")

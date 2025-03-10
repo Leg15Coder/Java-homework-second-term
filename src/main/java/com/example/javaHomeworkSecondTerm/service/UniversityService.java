@@ -3,6 +3,7 @@ package com.example.javaHomeworkSecondTerm.service;
 import com.example.javaHomeworkSecondTerm.repository.UniversitiesRepository;
 import com.example.javaHomeworkSecondTerm.exception.UniversityNotFoundException;
 import com.example.javaHomeworkSecondTerm.model.University;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -14,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UniversityService {
     private final UniversitiesRepository universitiesRepository;
@@ -54,7 +56,6 @@ public class UniversityService {
         return universitiesRepository.findById(id)
                 .map(existingUniversity -> {
                     existingUniversity.setName(university.getName());
-                    existingUniversity.setUser(university.getUser());
                     return universitiesRepository.save(existingUniversity);
                 })
                 .orElseThrow(() -> new UniversityNotFoundException(id));

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @Tag(name = "Users", description = "API для работы с пользователями")
 public interface UserApi {
@@ -32,7 +33,7 @@ public interface UserApi {
             content = @Content(schema = @Schema(implementation = User.class)))
     @ApiResponse(responseCode = "404", description = "Пользователь не найден")
     @GetMapping("/{id}")
-    ResponseEntity<User> getUserById(@Parameter(description = "ID пользователя") @PathVariable Long id);
+    ResponseEntity<User> getUserById(@Parameter(description = "ID пользователя") @PathVariable UUID id);
 
     @Operation(summary = "Создать нового пользователя")
     @ApiResponse(responseCode = "201", description = "Пользователь создан",
@@ -44,16 +45,16 @@ public interface UserApi {
     @ApiResponse(responseCode = "200", description = "Пользователь обновлён",
             content = @Content(schema = @Schema(implementation = User.class)))
     @PutMapping("/{id}")
-    ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user);
+    ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody User user);
 
     @Operation(summary = "Частично обновить данные пользователя")
     @ApiResponse(responseCode = "200", description = "Пользователь обновлён",
             content = @Content(schema = @Schema(implementation = User.class)))
     @PatchMapping("/{id}")
-    ResponseEntity<User> patchUser(@PathVariable Long id, @RequestBody User user);
+    ResponseEntity<User> patchUser(@PathVariable UUID id, @RequestBody User user);
 
     @Operation(summary = "Удалить пользователя по ID")
     @ApiResponse(responseCode = "204", description = "Пользователь удалён")
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteUser(@PathVariable Long id);
+    ResponseEntity<Void> deleteUser(@PathVariable UUID id);
 }

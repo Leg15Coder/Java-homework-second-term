@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -36,7 +37,7 @@ public class UsersController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<User> getUserById(Long id) {
+    public ResponseEntity<User> getUserById(UUID id) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
                 return ResponseEntity.ok(userService.getUserById(id));
@@ -55,7 +56,7 @@ public class UsersController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<User> updateUser(Long id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(UUID id, @RequestBody User user) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
                 return ResponseEntity.ok(userService.updateUser(id, user));
@@ -64,7 +65,7 @@ public class UsersController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<User> patchUser(Long id, @RequestBody User user) {
+    public ResponseEntity<User> patchUser(UUID id, @RequestBody User user) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
                 return ResponseEntity.ok(userService.patchUser(id, user));
@@ -73,7 +74,7 @@ public class UsersController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteUser(Long id) {
+    public ResponseEntity<Void> deleteUser(UUID id) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
                 userService.deleteUser(id);

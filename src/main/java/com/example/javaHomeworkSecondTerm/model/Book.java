@@ -1,19 +1,17 @@
 package com.example.javaHomeworkSecondTerm.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
+
+import java.util.List;
+import java.util.UUID;
+
+import static jakarta.persistence.CascadeType.PERSIST;
 
 @Entity
 @Builder
@@ -24,16 +22,12 @@ import lombok.Getter;
 @Table(name = "books")
 public class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 }
 
 
