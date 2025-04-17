@@ -7,7 +7,6 @@ import group.audits.dto.Audit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -21,17 +20,17 @@ public class UserAuditService {
     SELECT, UPDATE, INSERT, DELETE, DROPPED_DATABASE
   }
 
-  public void insertUserAction(UUID userId, Action action, Instant time, String message) {
+  public void insertUserAction(Audit audit) {
     PreparedStatement preparedStatement = session.prepare(
         "INSERT INTO my_keyspace.user_audit (user_id, event_time, event_type, event_details) " +
             "VALUES (?, ?, ?, ?)"
     );
 
     BoundStatement boundStatement = preparedStatement.bind(
-        userId,
-        time,
-        action.toString(),
-        message
+        audit.userId(),
+        audit.time(),
+        audit.action(),
+        audit.message()
     );
 
     session.execute(boundStatement);

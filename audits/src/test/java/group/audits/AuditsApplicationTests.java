@@ -48,7 +48,7 @@ class AuditsApplicationTests {
 		Instant testTime = Instant.now();
 		String testMessage = "Test message";
 
-		userAuditService.insertUserAction(testUserId, Action.SELECT, testTime, testMessage);
+		userAuditService.insertUserAction(new Audit(testUserId, Action.SELECT.toString(), testTime, testMessage));
 
 		ResultSet result = cqlSession.execute(
 				"SELECT * FROM " + KEYSPACE + ".user_audit WHERE user_id = ?",
@@ -70,7 +70,7 @@ class AuditsApplicationTests {
 		String testMessage = "Test message";
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			userAuditService.insertUserAction(null, Action.SELECT, testTime, testMessage);
+			userAuditService.insertUserAction(new Audit(null, Action.SELECT.toString(), testTime, testMessage));
 		});
 	}
 
@@ -78,8 +78,8 @@ class AuditsApplicationTests {
 	void getAllUserActionsPositive() {
 		Instant testTime1 = Instant.now();
 		Instant testTime2 = testTime1.plusSeconds(60);
-		userAuditService.insertUserAction(testUserId, Action.INSERT, testTime1, "First action");
-		userAuditService.insertUserAction(testUserId, Action.UPDATE, testTime2, "Second action");
+		userAuditService.insertUserAction(new Audit(testUserId, Action.INSERT.toString(), testTime1, "First action"));
+		userAuditService.insertUserAction(new Audit(testUserId, Action.UPDATE.toString(), testTime2, "Second action"));
 
 		Collection<Audit> actions = userAuditService.getAllUserActions(testUserId);
 
