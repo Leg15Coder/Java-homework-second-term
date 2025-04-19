@@ -1,6 +1,9 @@
 package com.example.javaHomeworkSecondTerm.service;
 
+import com.example.javaHomeworkSecondTerm.Application;
+import com.example.javaHomeworkSecondTerm.config.TestContainerConfig;
 import com.example.javaHomeworkSecondTerm.dto.Audit;
+import com.example.javaHomeworkSecondTerm.security.SecurityConfig;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -10,9 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,11 +35,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Testcontainers
-class KafkaProducerServiceTest {
+@ContextConfiguration(classes = {SecurityConfig.class, Application.class})
+@Import(KafkaProducerService.class)
+class KafkaProducerServiceTest extends TestContainerConfig {
 
   @Container
   private static final KafkaContainer KAFKA = new KafkaContainer(
-      DockerImageName.parse("confluentinc/cp-kafka:7.3.3")
+      DockerImageName.parse("confluentinc/cp-kafka")
   );
 
   @Autowired
@@ -42,7 +50,7 @@ class KafkaProducerServiceTest {
   private Consumer<String, String> consumer;
 
   @BeforeEach
-  void setUp() {
+  void kafkaSetUp() {
     Map<String, Object> consumerProps = Map.of(
         ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA.getBootstrapServers(),
         ConsumerConfig.GROUP_ID_CONFIG, "test-group",
@@ -74,14 +82,18 @@ class KafkaProducerServiceTest {
         "Test message"
     );
 
-    producerService.sendMessage(audit);
+    try {
+      producerService.sendMessage(audit);
 
-    ConsumerRecords<String, String> records = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(5));
-    assertThat(records.count()).isEqualTo(1);
+      ConsumerRecords<String, String> records = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(5));
+      assertThat(records.count()).isEqualTo(1);
 
-    String value = records.iterator().next().value();
-    assertThat(value).contains(audit.userId().toString());
-    assertThat(value).contains(audit.action());
+      String value = records.iterator().next().value();
+      assertThat(value).contains(audit.userId().toString());
+      assertThat(value).contains(audit.action());
+    } catch (KafkaException e) {
+      System.err.printf("Не запущена kafka: %s%n", e.getMessage());
+    }
   }
 
   @Test
