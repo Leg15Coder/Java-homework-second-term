@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,57 +28,57 @@ public class UsersController implements UserApi {
     private final UserService userService;
 
     @Override
-    public ResponseEntity<Collection<User>> getAllUsers() {
+    public ResponseEntity<Collection<User>> getAllUsers(@RequestHeader("userId") UUID userId) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
-                final Collection<User> result = userService.getAllUsers();
+                final Collection<User> result = userService.getAllUsers(userId);
                 return ResponseEntity.ok(result);
             });
         });
     }
 
     @Override
-    public ResponseEntity<User> getUserById(UUID id) {
+    public ResponseEntity<User> getUserById(@RequestHeader("userId") UUID userId, UUID id) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
-                return ResponseEntity.ok(userService.getUserById(id));
+                return ResponseEntity.ok(userService.getUserById(userId, id));
             });
         });
     }
 
     @Override
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestHeader("userId") UUID userId, @Valid @RequestBody User user) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
-                final User result = userService.createUser(user);
+                final User result = userService.createUser(userId, user);
                 return ResponseEntity.status(HttpStatus.CREATED).body(result);
             });
         });
     }
 
     @Override
-    public ResponseEntity<User> updateUser(UUID id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@RequestHeader("userId") UUID userId, UUID id, @RequestBody User user) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
-                return ResponseEntity.ok(userService.updateUser(id, user));
+                return ResponseEntity.ok(userService.updateUser(userId, id, user));
             });
         });
     }
 
     @Override
-    public ResponseEntity<User> patchUser(UUID id, @RequestBody User user) {
+    public ResponseEntity<User> patchUser(@RequestHeader("userId") UUID userId, UUID id, @RequestBody User user) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
-                return ResponseEntity.ok(userService.patchUser(id, user));
+                return ResponseEntity.ok(userService.patchUser(userId, id, user));
             });
         });
     }
 
     @Override
-    public ResponseEntity<Void> deleteUser(UUID id) {
+    public ResponseEntity<Void> deleteUser(@RequestHeader("userId") UUID userId, UUID id) {
         return circuitBreaker.executeSupplier(() -> {
             return rateLimiter.executeSupplier(() -> {
-                userService.deleteUser(id);
+                userService.deleteUser(userId, id);
                 return ResponseEntity.noContent().build();
             });
         });

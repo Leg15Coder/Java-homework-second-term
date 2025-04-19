@@ -26,35 +26,35 @@ public interface UserApi {
     @ApiResponse(responseCode = "200", description = "Успешный ответ",
             content = @Content(schema = @Schema(implementation = User.class)))
     @GetMapping
-    ResponseEntity<Collection<User>> getAllUsers();
+    ResponseEntity<Collection<User>> getAllUsers(UUID userId);
 
     @Operation(summary = "Получить пользователя по ID")
     @ApiResponse(responseCode = "200", description = "Успешный ответ",
             content = @Content(schema = @Schema(implementation = User.class)))
     @ApiResponse(responseCode = "404", description = "Пользователь не найден")
     @GetMapping("/{id}")
-    ResponseEntity<User> getUserById(@Parameter(description = "ID пользователя") @PathVariable UUID id);
+    ResponseEntity<User> getUserById(UUID userId, @Parameter(description = "ID пользователя") @PathVariable UUID id);
 
     @Operation(summary = "Создать нового пользователя")
     @ApiResponse(responseCode = "201", description = "Пользователь создан",
             content = @Content(schema = @Schema(implementation = User.class)))
     @PostMapping
-    ResponseEntity<User> createUser(@RequestBody User user);
+    ResponseEntity<User> createUser(UUID userId, @RequestBody User user);
 
     @Operation(summary = "Обновить данные пользователя (замена всех полей)")
     @ApiResponse(responseCode = "200", description = "Пользователь обновлён",
             content = @Content(schema = @Schema(implementation = User.class)))
     @PutMapping("/{id}")
-    ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody User user);
+    ResponseEntity<User> updateUser(UUID userId, @PathVariable UUID id, @RequestBody User user);
 
     @Operation(summary = "Частично обновить данные пользователя")
     @ApiResponse(responseCode = "200", description = "Пользователь обновлён",
             content = @Content(schema = @Schema(implementation = User.class)))
     @PatchMapping("/{id}")
-    ResponseEntity<User> patchUser(@PathVariable UUID id, @RequestBody User user);
+    ResponseEntity<User> patchUser(UUID userId, @PathVariable UUID id, @RequestBody User user);
 
     @Operation(summary = "Удалить пользователя по ID")
     @ApiResponse(responseCode = "204", description = "Пользователь удалён")
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteUser(@PathVariable UUID id);
+    ResponseEntity<Void> deleteUser(UUID userId, @PathVariable UUID id);
 }

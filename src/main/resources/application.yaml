@@ -20,6 +20,8 @@ spring:
     user:
       name: admin
       password: someText
+  kafka:
+    bootstrap-servers: localhost:29093
 
 local:
   server:
@@ -39,6 +41,7 @@ management:
   server:
     base-path: /admin/actuator
 
+topic-to-send-message: your-topic-name
 
 resilience4j:
   circuitbreaker:

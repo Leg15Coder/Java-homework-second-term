@@ -19,6 +19,7 @@ import com.example.javaHomeworkSecondTerm.security.SecurityConfig;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,20 +41,24 @@ public class UsersControllerTest extends TestContainerConfig {
 
     @Test
     public void testGetAllUsers() throws Exception {
+        UUID testUserId = UUID.randomUUID();
         List<User> users = List.of(new User("test@email.com", "John", "Doe"));
-        when(userService.getAllUsers()).thenReturn(users);
+        when(userService.getAllUsers(testUserId)).thenReturn(users);
 
-        mockMvc.perform(get("/users"))
+        mockMvc.perform(get("/users")
+                .header("userId", testUserId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].email").value("test@email.com"));
     }
 
     @Test
     public void testCreateUser() throws Exception {
+        UUID testUserId = UUID.randomUUID();
         User user = new User("test@email.com", "John", "Doe");
-        when(userService.createUser(any())).thenReturn(user);
+        when(userService.createUser(eq(testUserId), any())).thenReturn(user);
 
         mockMvc.perform(post("/users")
+                        .header("userId", testUserId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\": \"test@email.com\", \"name\": \"John\", \"surname\": \"Doe\"}"))
                 .andExpect(status().isCreated())
