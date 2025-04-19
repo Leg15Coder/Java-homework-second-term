@@ -36,6 +36,13 @@ public class KafkaProducerService {
     }
 
     CompletableFuture<SendResult<String, String>> sendResult = kafkaTemplate.send(topic, message);
+
+    sendResult.whenComplete((result, ex) -> {
+      if (ex != null) {
+        log.error("Failed to send message to Kafka: {}", ex.getMessage());
+        throw new RuntimeException("Failed to send message to Kafka", ex);
+      }
+    });
   }
 }
 
