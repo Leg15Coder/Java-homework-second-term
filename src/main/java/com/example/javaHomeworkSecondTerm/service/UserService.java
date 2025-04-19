@@ -3,8 +3,12 @@ package com.example.javaHomeworkSecondTerm.service;
 import com.example.javaHomeworkSecondTerm.dto.Audit;
 import com.example.javaHomeworkSecondTerm.exception.UserDeleteException;
 import com.example.javaHomeworkSecondTerm.exception.UserNotFoundException;
+import com.example.javaHomeworkSecondTerm.model.OutboxRecord;
+import com.example.javaHomeworkSecondTerm.repository.OutboxRepository;
 import com.example.javaHomeworkSecondTerm.repository.UsersRepository;
 import com.example.javaHomeworkSecondTerm.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,23 +28,49 @@ import java.util.UUID;
 public class UserService {
   private final UsersRepository usersRepository;
   private final KafkaProducerService kafkaProducerService;
+  private final OutboxRepository outboxRepository;
+  private final ObjectMapper objectMapper;
 
   public Collection<User> getAllUsers(UUID userId) {
     var users = usersRepository.findAll();
-    kafkaProducerService.sendMessage(new Audit(userId, "SELECT", Instant.now(), "select all users"));
+    try {
+      outboxRepository.save(new OutboxRecord(
+          objectMapper.writeValueAsString(
+              new Audit(userId, "SELECT", Instant.now(), "select all users")
+          )
+      ));
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage());
+    }
     return users;
   }
 
   @Cacheable(value = "userCache", key = "#id")
   public User getUserById(UUID userId, UUID id) {
     var user = usersRepository.findById(id).orElse(null);
-    kafkaProducerService.sendMessage(new Audit(userId, "SELECT", Instant.now(), "select user with id=%s".formatted(id)));
+    try {
+      outboxRepository.save(new OutboxRecord(
+          objectMapper.writeValueAsString(
+              new Audit(userId, "SELECT", Instant.now(), "select user with id=%s".formatted(id))
+          )
+      ));
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage());
+    }
     return user;
   }
 
   public User createUser(UUID userId, User user) {
     var result = usersRepository.save(user);
-    kafkaProducerService.sendMessage(new Audit(userId, "INSERT", Instant.now(), "create new user"));
+    try {
+      outboxRepository.save(new OutboxRecord(
+          objectMapper.writeValueAsString(
+              new Audit(userId, "INSERT", Instant.now(), "create new user")
+          )
+      ));
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage());
+    }
     return result;
   }
 
@@ -53,7 +83,17 @@ public class UserService {
           return usersRepository.save(existingUser);
         })
         .orElseThrow(() -> new UserNotFoundException(id));
-    kafkaProducerService.sendMessage(new Audit(userId, "UPDATE", Instant.now(), "update user with id=%s".formatted(id)));
+
+    try {
+      outboxRepository.save(new OutboxRecord(
+          objectMapper.writeValueAsString(
+              new Audit(userId, "UPDATE", Instant.now(), "update user with id=%s".formatted(id))
+          )
+      ));
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage());
+    }
+
     return user;
   }
 
@@ -66,7 +106,17 @@ public class UserService {
           return usersRepository.save(existingUser);
         })
         .orElseThrow(() -> new UserNotFoundException(id));
-    kafkaProducerService.sendMessage(new Audit(userId, "UPDATE", Instant.now(), "patch user with id=%s".formatted(id)));
+
+    try {
+      outboxRepository.save(new OutboxRecord(
+          objectMapper.writeValueAsString(
+              new Audit(userId, "UPDATE", Instant.now(), "patch user with id=%s".formatted(id))
+          )
+      ));
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage());
+    }
+
     return user;
   }
 
@@ -82,7 +132,16 @@ public class UserService {
   public void deleteUser(UUID userId, UUID id) {
     User user = usersRepository.findById(id).orElseThrow(() -> new UserDeleteException("%s".formatted(id)));
     usersRepository.delete(user);
-    kafkaProducerService.sendMessage(new Audit(userId, "DELETE", Instant.now(), "delete user with id=%s".formatted(id)));
+
+    try {
+      outboxRepository.save(new OutboxRecord(
+          objectMapper.writeValueAsString(
+              new Audit(userId, "DELETE", Instant.now(), "delete user with id=%s".formatted(id))
+          )
+      ));
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage());
+    }
   }
 }
 

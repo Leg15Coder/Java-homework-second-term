@@ -17,6 +17,15 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: true
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    producer:
+      retries: 0
+    consumer:
+      group-id: test-group
+      auto-offset-reset: earliest
+
+topic-to-send-message: test-outbox-topic
 
 local:
   server:
