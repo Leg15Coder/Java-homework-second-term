@@ -40,6 +40,10 @@ management:
         exclude: shutdown
   server:
     base-path: /admin/actuator
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 topic-to-send-message: your-topic-name
 
