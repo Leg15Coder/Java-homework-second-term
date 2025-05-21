@@ -1,10 +1,8 @@
 package com.example.javaHomeworkSecondTerm.service;
 
+import com.example.javaHomeworkSecondTerm.metric.Metric;
 import com.example.javaHomeworkSecondTerm.model.OutboxRecord;
 import com.example.javaHomeworkSecondTerm.repository.OutboxRepository;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,25 +17,18 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 public class OutboxScheduler {
-  private final Timer processingTimer;
-  private final MeterRegistry meterRegistry;
+  private final Metric metric;
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final String topic;
   private final OutboxRepository outboxRepository;
 
   public OutboxScheduler(
-      MeterRegistry meterRegistry,
+      Metric metric,
       KafkaTemplate<String, String> kafkaTemplate,
       OutboxRepository outboxRepository,
       @Value("${topic-to-send-message}") String topic) {
 
-    this.processingTimer = Timer.builder("outbox.process.timer")
-        .description("Время, затраченное на обработку исходящих сообщений")
-        .publishPercentiles(0.5, 0.75, 0.95, 0.99)
-        .publishPercentileHistogram()
-        .register(meterRegistry);
-
-    this.meterRegistry = meterRegistry;
+    this.metric = metric;
     this.kafkaTemplate = kafkaTemplate;
     this.outboxRepository = outboxRepository;
     this.topic = topic;
@@ -46,7 +37,7 @@ public class OutboxScheduler {
   @Transactional
   @Scheduled(fixedDelay = 10000)
   public void processOutbox() {
-    processingTimer.record(() -> {
+    this.metric.recordWithTimer(() -> {
       List<OutboxRecord> records = outboxRepository.findAll();
       for (OutboxRecord record : records) {
         try {
@@ -54,9 +45,9 @@ public class OutboxScheduler {
               .get(10, TimeUnit.SECONDS);
           outboxRepository.delete(record);
 
-          meterRegistry.counter("outbox.process.result.count", "status", "success").increment();
+          this.metric.incrementSuccess();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-          meterRegistry.counter("outbox.process.result.count", "status", "error").increment();
+          this.metric.incrementError();
         }
       }
     });
