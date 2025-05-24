@@ -1,12 +1,12 @@
 package com.example.javaHomeworkSecondTerm.service;
 
+import com.example.javaHomeworkSecondTerm.config.TestContainerConfig;
 import com.example.javaHomeworkSecondTerm.model.OutboxRecord;
 import com.example.javaHomeworkSecondTerm.repository.OutboxRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.test.context.ActiveProfiles;
@@ -18,15 +18,11 @@ import java.util.concurrent.ExecutionException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@DataJpaTest
-@Import(OutboxScheduler.class)
+@SpringBootTest
 @ActiveProfiles("test")
-public class OutboxSchedulerIntegrationTest {
+public class OutboxSchedulerIntegrationTest extends TestContainerConfig {
 
   @MockBean
   private KafkaTemplate<String, String> kafkaTemplate;
