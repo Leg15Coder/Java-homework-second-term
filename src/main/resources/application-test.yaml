@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: java-homework-second-term-test
+  security:
+    user:
+      name: test
+      password: someText
+  datasource:
+    url: jdbc:postgresql://localhost:50975/testdb
+    driver-class-name: org.postgresql.Driver
+    username: testuser
+    password: testpass
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    producer:
+      retries: 0
+    consumer:
+      group-id: test-group
+      auto-offset-reset: earliest
+
+topic-to-send-message: test-outbox-topic
+
+local:
+  server:
+    port: 8082
